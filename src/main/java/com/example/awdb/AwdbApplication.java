@@ -11,10 +11,32 @@ import java.util.Random;
 public class AwdbApplication {
 
     public static void main(String[] args) throws Exception {
-        AWReader awReader = new AWReader(new File("C:\\Users\\admin\\Desktop\\awdb-java\\IP_basic_single_WGS84.awdb"));
-        String ip = getRandomIp();
+        String ip = args[0];
+        String filePath = args[1];
+        AWReader awReader = new AWReader(new File(filePath));
         InetAddress address = InetAddress.getByName(ip);
         JsonNode record = awReader.get(address);
+        if (record != null) {
+            JsonNode continent = record.get("continent");
+            if (continent != null) {
+                System.out.println(continent.asText());
+            }
+
+            JsonNode country = record.get("country");
+            if (country != null) {
+                System.out.println(country.asText());
+            }
+
+            JsonNode city = record.get("city");
+            if (city != null) {
+                System.out.println(city.asText());
+            }
+
+            JsonNode accuracy = record.get("accuracy");
+            if (accuracy != null) {
+                System.out.println(accuracy.asText());
+            }
+        }
         System.out.println(record);
     }
 
