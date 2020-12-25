@@ -6,6 +6,8 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
@@ -142,6 +144,20 @@ public class AWReader implements Closeable {
      * @throws IOException if a file I/O error occurs.
      */
     public JsonNode get(InetAddress ipAddress) throws IOException {
+        int ipVersion = this.getMetadata().getIpVersion();
+
+        if (ipAddress instanceof Inet4Address && ipVersion == 6) {
+            throw new IpTypeException(String.format("====================IpTypeException====================\n" +
+                    "Error looking up %s. You attempted to look up an IPv4 address in an IPv6-only database\n" +
+                    "====================IpTypeException====================", ipAddress.getHostAddress()));
+        }
+
+        if (ipAddress instanceof Inet6Address && ipVersion == 4) {
+            throw new IpTypeException(String.format("====================IpTypeException====================\n" +
+                    "Error looking up %s. You attempted to look up an IPv6 address in an IPv4-only database\n" +
+                    "====================IpTypeException====================", ipAddress.getHostAddress()));
+        }
+
         return getRecord(ipAddress).getData();
     }
 
